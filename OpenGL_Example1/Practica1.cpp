@@ -261,12 +261,12 @@ void Practica1::keyboard(unsigned char key, int mX, int mY){
 	}
 	// tiling
 	if(key == 't'){
-		modoTiling= true;
+		modoTiling= modoTiling == true ? false : true;
 	}
 
 	if(key == 'x'){
 		cam.psY = cam.psZ = 0; cam.psX = 300;
-		cam.arY = 1;
+		cam.arY = 1; cam.arX =0;
 		camara = true;
 		horizontal = &cam.psZ;
 		vertical = &cam.psY;
@@ -274,7 +274,7 @@ void Practica1::keyboard(unsigned char key, int mX, int mY){
 	}
 	if(key == 'y'){
 		cam.psX = cam.psZ = 0; cam.psY = 300;
-		cam.arX = 1;
+		cam.arX = 1; cam.arY =0;
 		camara = true;
 
 		horizontal = &cam.psX;
@@ -283,7 +283,7 @@ void Practica1::keyboard(unsigned char key, int mX, int mY){
 	}
 	if(key == 'z'){
 		cam.psX = cam.psY = 0; cam.psZ = 300;
-		cam.arY = 1;
+		cam.arY = 1; cam.arX =0;
 		camara = true;
 
 		horizontal = &cam.psX;
