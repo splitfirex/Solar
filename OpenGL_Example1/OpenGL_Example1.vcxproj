@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{20E199CC-CADE-4372-AFE6-855B82649D2C}</ProjectGuid>
     <RootNamespace>OpenGL_Example1</RootNamespace>
-    <ProjectName>OGL_Basis</ProjectName>
+    <ProjectName>UCM-Practica1</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -63,11 +63,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camara.cpp" />
     <ClCompile Include="Imagen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Practica1.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camara.h" />
     <ClInclude Include="Escena.h" />
     <ClInclude Include="Formas.h" />
     <ClInclude Include="Imagen.h" />
