@@ -1,0 +1,18 @@
+d
+14 14 14 31 // 14 datos y 31 indice
+v
+0 0 0 1 -1 0 0 -1 1 -1 -1 0 0 -1 -1 // punta 0 y base inferior
+0 0 0 1 1 0 0 1 1 -1 1 0 0 1 -1 // punta 5 y base superior
+1 0 1 1 0 -1 -1 0 -1 -1 0 1 // cuadrado 10
+n
+0 1 0 1 0 0 0 0 1 -1 0 0 0 0 -1 // punta 0 y base inferior // punta 0 y base inferior
+0 -1 0 1 0 0 0 0 1 -1 0 0 0 0 -1 // punta 5 y base superior
+0 1 0 0 1 0 0 1 0 0 1 0 // cuadrado 10
+c
+1 0 0 0 1 0 0 0 1 0 1 0 0 0 1 // punta 0 y base inferior
+1 0 0 0 1 0 0 0 1 0 1 0 0 0 1 // punta 5 y base superior
+0 1 0 0 0 1 0 1 0 0 0 1 // cuadrado 10
+i
+1 0 2 2 0 3 3 0 4 4 0 1 // triángulos inferiores
+6 5 7 7 5 8 8 5 9 9 5 6 // triángulos superiores
+10 11 12 12 13 10 // Cuadrao
