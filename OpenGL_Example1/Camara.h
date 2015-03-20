@@ -8,6 +8,8 @@ class Camara
 {
 public:
 
+	typedef struct Vector3 { GLfloat x,y,z ; } Vector3;
+
 	int modo;
 	bool camara;
 
@@ -31,10 +33,7 @@ public:
 	void reset();
 	void colocarCamara();
 	void colocarLuz();
-	Camara::Camara(double posx, double posy, double posz,  
-			   double verx, double very, double verz, 
-			   double arx,  double ary,  double arz);
-
+	Camara::Camara(Vector3 pos, Vector3 ver, Vector3 arr); 
 	~Camara(void);
 
 private:
@@ -42,10 +41,7 @@ private:
 	double escala;
 	double anguloY, anguloX;
 
-	struct camara{
-		GLdouble psX,psY,psZ;
-		GLdouble veX,veY,veZ;
-		GLdouble arX,arY,arZ;
+	struct camara{	Vector3 pos; Vector3 ver; Vector3 arr;
 	} cam, ini;
 
 	struct offset{

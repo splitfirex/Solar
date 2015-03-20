@@ -42,12 +42,14 @@ Practica1::Practica1(void)
 	tierra=gluNewQuadric();
 
 	// Inicializo las 4 camaras
-	camaras[0] =  new Camara(100.0,100.0,100.0,
-		0.0,0.0,0.0,
-		0.0,1.0,0.0);
+	Camara::Vector3 pos = {100,100,100};
+	Camara::Vector3 ver = {0,0,0};
+	Camara::Vector3 arr = {0,1,0};
 
+	camaras[0] =  new Camara(pos,ver,arr);
 	camaras[0]->proyecion(-200,200,-200,200,-50,1000);
-
+/*
+	
 	camaras[1] =  new Camara(100.0,0.0,0.0,
 		0.0,0.0,0.0,
 		0.0,1.0,0.0);
@@ -65,7 +67,7 @@ Practica1::Practica1(void)
 		0.0,0.0,0.0,
 		0.0,1.0,0.0);
 
-	camaras[3]->proyecion(-200,200,-200,200,-100,1000);
+	camaras[3]->proyecion(-200,200,-200,200,-100,1000);*/
 	camaraActual = camaras[0];
 
 	// Establecemos la ilumunacion

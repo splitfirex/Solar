@@ -7,52 +7,60 @@
 
 int panelH, panelW;
 
-
-float toRadians(float degrees)
-{
-	return degrees * (PI / 180.0);
+GLfloat modulo(Camara::Vector3 v1){
+	return sqrt(v1.x*v1.x + v1.y*v1.y + v1.z*v1.z);
 }
 
-void prod_vec (float x1, float y1, float z1, float x2, float y2, float z2, float *x3, float *y3, float *z3)
-{
-	*x3 = y1*z2-z1*y2;
-	*y3 = x1*z2-z1*x2;
-	*z3 = x1*y2-y1*x2;
+GLfloat prodEscalar(Camara::Vector3 v1, Camara::Vector3 v2){
+	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+}
+
+Camara::Vector3 prodVectorial(Camara::Vector3 v1, Camara::Vector3 v2){
+	Camara::Vector3 resultado;
+	resultado.x = v1.y*v2.z - v1.z*v2.y; 
+	resultado.y = v1.x*v2.z - v1.z*v2.x;
+	resultado.z = v1.x*v2.y - v1.y*v2.x;
+	return resultado;
+}
+
+Camara::Vector3 normalizar(Camara::Vector3 v1){
+	Camara::Vector3 resultado;
+	GLfloat mod =  modulo(v1);
+	resultado.x = v1.x/mod;
+	resultado.y = v1.y/mod;
+	resultado.z = v1.z/mod;
+	return resultado;
+}
+
+Camara::Vector3 getVector(Camara::Vector3 x1, Camara::Vector3 x2){
+	Camara::Vector3 resultado;
+	resultado.x = x2.x - x1.x; resultado.y = x2.y - x1.y; resultado.z = x2.z - x1.z;
+	return resultado;
+}
+
+Camara::Vector3 restarVector(Camara::Vector3 x1, Camara::Vector3 x2){
+	Camara::Vector3 resultado;
+	resultado.x = x1.x - x2.x; resultado.y = x1.y - x2.y; resultado.z = x1.z - x2.z;
+	return resultado;
+}
+
+Camara::Vector3 sumarVector(Camara::Vector3 x1, Camara::Vector3 x2){
+	Camara::Vector3 resultado;
+	resultado.x = x2.x + x1.x; resultado.y = x2.y + x1.y; resultado.z = x2.z + x1.z;
+	return resultado;
 }
 
 
-
-double prod_esc (float x1, float y1, float z1, float x2, float y2, float z2)
-{
-	return  x1*x2 + y1*y2 +z1*z2;
-}
-
-double modulo (float x1, float y1, float z1)
-{
-	return  sqrt(x1*x1 + y1*y1 +z1*z1);
-
-}
-double anguloEntreVectores(float x1, float y1, float z1, float x2, float y2, float z2){
-	return prod_esc(x1,y1,z1,x2,y2,z2)/(modulo(x1,y1,z1)*modulo(x2,y2,z2));
-}
-
-
-Camara::Camara(double posx, double posy, double posz,  
-			   double verx, double very, double verz, 
-			   double arx,  double ary,  double arz)
-{
+Camara::Camara(Vector3 pos, Vector3 ver, Vector3 arr) 
+			{
 	escala = 1;
-	cam.arX =arx; cam.arY =ary; cam.arZ =arz;
-	cam.veX =verx; cam.veY =very; cam.veZ =verz;
-	cam.psX = posx; cam.psY = posy; cam.psZ = posz; 
+	cam.pos = pos; cam.arr = arr; cam.ver = ver;
+	ini.pos = pos; ini.arr = arr; cam.ver = ver;
 
-	ini.arX =arx; ini.arY =ary; ini.arZ =arz;
-	ini.veX =verx; ini.veY =very; ini.veZ =verz;
-	ini.psX = posx; ini.psY = posy; ini.psZ = posz; 
+	Vector3 vd = getVector(cam.pos,cam.ver);
 
-	anguloY = -atan2f(very-posy,sqrt((very-posy)*(very-posy)+ (verz-posz)*(verz-posz)));
-	anguloX = atan2f((verz-posz)*(verz-posz),(verx-posx)*(verx-posx)) - 0,57079633;
-
+	anguloY = -atan2f(vd.y,sqrt((vd.y*vd.y)+ (vd.z*vd.z)));
+	anguloX = atan2f(vd.z*vd.z,vd.x*vd.x) + 1,57079633;
 
 	std::cout << "aguloy" << anguloY << "agulox" << anguloX <<std::endl;
 		modo = MODO_ORTOGONAL;
@@ -82,10 +90,8 @@ void Camara::rotarU(double an){
 	std::cout << "aguloy" << anguloY << "agulox" << anguloX;
 	anguloX +=an;
 	double yaw = anguloX, pitch =anguloY;
-	float viewX = cam.veX - cam.psX;
-	float viewY = cam.veY - cam.psY;
-	float viewZ = cam.veZ - cam.psZ;
-	float magnitude = sqrt( (viewX * viewX) + (viewY * viewY) + (viewZ * viewZ) );
+	Vector3 view = getVector(cam.pos,cam.ver);
+	float magnitude = modulo(view);
 
 	/*if(cosf(yaw)*cosf(pitch)*magnitude > 0) {
 		cam.arY =1;
@@ -93,15 +99,15 @@ void Camara::rotarU(double an){
 		cam.arY =-1;
 	}*/
 
-	float x2 = cam.veX +  cosf(yaw)*cosf(pitch)*magnitude;
-	float y2 = cam.veY + sinf(pitch)*magnitude;
-	float z2 = cam.veZ + -sinf(yaw)*cosf(pitch)*magnitude;
+	float x2 = cam.ver.x +  cosf(yaw)*cosf(pitch)*magnitude;
+	float y2 = cam.ver.y + sinf(pitch)*magnitude;
+	float z2 = cam.ver.z + -sinf(yaw)*cosf(pitch)*magnitude;
 
 	std::cout << "x " << cosf(yaw)*cosf(pitch)*magnitude <<  "y"<< sinf(pitch)*magnitude << "z" <<-sinf(yaw)*cosf(pitch)*magnitude <<std::endl;
 
-	cam.psX = x2;
-	cam.psY = y2;
-	cam.psZ = z2;
+	cam.pos.x = x2;
+	cam.pos.y = y2;
+	cam.pos.z = z2;
 }
 
 void Camara::reshape(int w, int h){
@@ -115,156 +121,81 @@ void Camara::rotarV(double an){
 	std::cout << "aguloy" << anguloY << "agulox" << anguloX;
 	anguloY +=an;
 	double yaw = anguloX, pitch =anguloY;
-	float viewX = cam.veX - cam.psX;
-	float viewY = cam.veY - cam.psY;
-	float viewZ = cam.veZ - cam.psZ;
-	float magnitude = sqrt( (viewX * viewX) + (viewY * viewY) + (viewZ * viewZ) );
+	Vector3 view = getVector(cam.pos,cam.ver);
+	Vector3 derecha = prodVectorial(view,cam.arr);
+	Vector3 arriba = prodVectorial(view,derecha);
+	Vector3 arribaN = normalizar(arriba);
+	cam.arr = arribaN;
+	std::cout << "y" << arribaN.y << "x" << arribaN.x  << "z" << arribaN.z  <<  std::endl;
+	float magnitude =  modulo(view);
+
+
 
 	if(cosf(yaw)*cosf(pitch)*magnitude > 0) {
-		cam.arY =1;
+		cam.arr.y =1;
 	}else{
-		cam.arY =-1;
+		cam.arr.y =-1;
 	}
 
-	float x2 = cam.veX +  cosf(yaw)*cosf(pitch)*magnitude;
-	float y2 = cam.veY + sinf(pitch)*magnitude;
-	float z2 = cam.veZ + -sinf(yaw)*cosf(pitch)*magnitude;
+	float x2 = cam.ver.x +  cosf(yaw)*cosf(pitch)*magnitude;
+	float y2 = cam.ver.y + sinf(pitch)*magnitude;
+	float z2 = cam.ver.z + -sinf(yaw)*cosf(pitch)*magnitude;
 
 	std::cout << "x " << cosf(yaw)*cosf(pitch)*magnitude <<  "y"<< sinf(pitch)*magnitude << "z" <<-sinf(yaw)*cosf(pitch)*magnitude <<std::endl;
 
-	cam.psX = x2;
-	cam.psY = y2;
-	cam.psZ = z2;
+	cam.pos.x = x2;
+	cam.pos.y = y2;
+	cam.pos.z = z2;
 
 
 }
 
 void Camara::reset(){
-	cam.psX = ini.psX;cam.psY = ini.psY;cam.psZ = ini.psZ;
-	cam.veX = ini.veX;cam.veY = ini.veY; cam.veZ = ini.veZ;
-	cam.arX = ini.arX;cam.arY = ini.arY; cam.arZ = ini.arZ;
+	cam = ini;
 	escala =1;
 }
 
 double* Camara::getPosicion(){
 	double valor[3];
-	valor[0] = cam.psX;
-	valor[1] = cam.psY;
-	valor[2] = cam.psZ;
+	valor[0] = cam.pos.x;
+	valor[1] = cam.pos.y;
+	valor[2] = cam.pos.z;
 	return valor;
 }
 
 void Camara::moverDerecha(double escala){
-	float viewX = cam.veX - cam.psX;
-	float viewY = cam.veY - cam.psY;
-	float viewZ = cam.veZ - cam.psZ;
-
-	float x,y,z;
-	prod_vec(viewX,viewY,viewZ,cam.arX,cam.arY, cam.arZ,&x,&y,&z);
-
-	float magnitude = sqrt( (x * x) + (y * y) + (z * z) );
-
-	x /= magnitude;
-	y /= magnitude;
-	z /= magnitude;
-
-	cam.veX += x;
-	cam.veY += y;
-	cam.veZ += z;
-
-	cam.psX += x;
-	cam.psY += y;
-	cam.psZ += z;
-	std::cout << "pos " << cam.psX << " " << cam.psY << " " << cam.psZ << std::endl;
+	Vector3 view = getVector(cam.pos,cam.ver);
+	Vector3 derecha = prodVectorial(view,cam.arr);
+	Vector3 derechaN = normalizar(derecha);
+	cam.pos = sumarVector(cam.pos,derechaN);
+	cam.ver = sumarVector(cam.ver,derechaN);
 }
 
 void Camara::moverIzquierda(double escala){
-	float viewX = cam.veX - cam.psX;
-	float viewY = cam.veY - cam.psY;
-	float viewZ = cam.veZ - cam.psZ;
-
-	float x,y,z;
-	prod_vec(viewX,viewY,viewZ,cam.arX,cam.arY, cam.arZ,&x,&y,&z);
-	float magnitude = sqrt( (x * x) + (y * y) + (z * z) );
-
-	x /= magnitude;
-	y /= magnitude;
-	z /= magnitude;
-
-	cam.veX -= x;
-	cam.veY -= y;
-	cam.veZ -= z;
-
-	cam.psX -= x;
-	cam.psY -= y;
-	cam.psZ -= z;
-
-	std::cout << "pos " << cam.psX << " " << cam.psY << " " << cam.psZ << std::endl;
+	Vector3 view = getVector(cam.pos,cam.ver);
+	Vector3 derecha = prodVectorial(view,cam.arr);
+	Vector3 derechaN = normalizar(derecha);
+	cam.pos = restarVector(cam.pos,derechaN);
+	cam.ver = restarVector(cam.ver,derechaN);
 }
 
 void Camara::moverArriba(double escala){
-
-	float viewX = cam.veX - cam.psX;
-	float viewY = cam.veY - cam.psY;
-	float viewZ = cam.veZ - cam.psZ;
-
-	float x,y,z;
-	float x2,y2,z2;
-	prod_vec(viewX,viewY,viewZ,cam.arX,cam.arY, cam.arZ,&x,&y,&z);
-	prod_vec(x,y,z,viewX,viewY,viewZ,&x2,&y2,&z2);
-
-	std::cout << "vector " << x << " " << y << " " << z << std::endl;
-
-	float magnitude = sqrt( (x2 * x2) + (y2 * y2) + (z2 * z2) );
-
-	x2 /= magnitude;
-	y2 /= magnitude;
-	z2 /= magnitude;
-
-	cam.veX -= x2;
-	cam.veY -= y2;
-	cam.veZ -= z2;
-
-	cam.psX -= x2;
-	cam.psY -= y2;
-	cam.psZ -= z2;
-	std::cout << "pos " << cam.psX << " " << cam.psY << " " << cam.psZ << std::endl;
-
-
+	Vector3 view = getVector(cam.pos,cam.ver);
+	Vector3 derecha = prodVectorial(view,cam.arr);
+	Vector3 arriba = prodVectorial(view,derecha);
+	Vector3 arribaN = normalizar(arriba);
+	cam.pos = sumarVector(cam.pos,arribaN);
+	cam.ver = sumarVector(cam.ver,arribaN);
 }
 
 
 void Camara::moverAbajo(double escala){
-
-	float viewX = cam.veX - cam.psX;
-	float viewY = cam.veY - cam.psY;
-	float viewZ = cam.veZ - cam.psZ;
-
-	float x,y,z;
-	float x2,y2,z2;
-
-	prod_vec(viewX,viewY,viewZ,cam.arX,cam.arY, cam.arZ,&x,&y,&z);
-	prod_vec(x,y,z,viewX,viewY,viewZ,&x2,&y2,&z2);
-
-
-	std::cout << "vector " << x << " " << y << " " << z << std::endl;
-
-	float magnitude = sqrt( (x2 * x2) + (y2 * y2) + (z2 * z2) );
-
-	x2 /= magnitude;
-	y2 /= magnitude;
-	z2 /= magnitude;
-
-	cam.veX += x2;
-	cam.veY += y2;
-	cam.veZ += z2;
-
-	cam.psX += x2;
-	cam.psY += y2;
-	cam.psZ += z2;
-	std::cout << "pos " << cam.psX << " " << cam.psY << " " << cam.psZ << std::endl;
-
-
+Vector3 view = getVector(cam.pos,cam.ver);
+	Vector3 derecha = prodVectorial(view,cam.arr);
+	Vector3 arriba = prodVectorial(view,derecha);
+	Vector3 arribaN = normalizar(arriba);
+	cam.pos = restarVector(cam.pos,arribaN);
+	cam.ver = restarVector(cam.ver,arribaN);
 }
 
 
@@ -274,9 +205,9 @@ void Camara::colocarCamara(){
 
 		glMatrixMode(GL_MODELVIEW);   // VIEW
 		glLoadIdentity();
-		gluLookAt(cam.psX,cam.psY,cam.psZ, 
-			cam.veX,cam.veY,cam.veZ, 
-			cam.arX,cam.arY,cam.arZ);
+		gluLookAt(cam.pos.x,cam.pos.y,cam.pos.z, 
+			cam.ver.x,cam.ver.y,cam.ver.z, 
+			cam.arr.x,cam.arr.y,cam.arr.z);
 
 		glMatrixMode(GL_PROJECTION);  // Pr
 		if(modo == MODO_ORTOGONAL ){
